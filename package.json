@@ -1,0 +1,14 @@
+{
+  "name": "rg_bootcamp",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "bsb -make-world",
+    "clean": "bsb -clean-world",
+    "watch": "yarn clean && yarn build -w"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^4.0.18"
+  }
+}

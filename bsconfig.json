@@ -1,0 +1,8 @@
+{
+  "name": "rg_bootcamp",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "refmt": 3
+}

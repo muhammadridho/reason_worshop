@@ -50,8 +50,32 @@ let append = (maybeValue, xs) => {
   };
 };
 
-// let somethong = xs => [...xs, 1];
+let rec sum = xs => {
+  switch (xs) {
+  | [] => 0
+  | [hd, ...tl] => hd + sum(tl)
+  };
+};
 
-let value = None;
+let sum = xs => {
+  let length = List.length(xs);
+  let result = ref(0);
+  for (x in 0 to length) {
+    result := result^ + x;
+  };
+  result^;
+};
 
-append(value, [||]);
+let sum = xs => List.fold_left((acc, number) => acc + number, 0, xs);
+
+let rec fib = x =>
+  if (x == 0) {
+    1;
+  } else {
+    x - 1 + fib(x - 1);
+  };
+// let somethong = xs => [...xs, 1////];
+
+// let value = None;
+
+append(None, [||]);

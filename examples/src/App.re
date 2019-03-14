@@ -1,6 +1,7 @@
 module Styles = {
   open Css;
-  let container = style([display(`flex)]);
+  let container =
+    style([display(`flex), flexDirection(`column), alignItems(`center)]);
 };
 
 type state = {
@@ -9,24 +10,73 @@ type state = {
 };
 
 type action =
-  | SaveTodo(Todo_Item.t, string)
-  | OnChangeTodoValue(string)
-  | HandleEnterKeyDown;
+  | UpdateTodo(Todo_Item.t, string)
+  | OnChangeNewTodoValue(string)
+  | HandleEnterKeyDown(int)
+  | DeleteTodo(string);
 
 let component = ReasonReact.reducerComponent("App_Root");
 
 let make = _children => {
   ...component,
-  initialState: () => {todos: [], newTodoValue: ""},
+  initialState: () => {
+    todos: [{id: "sss", title: "ahay", checked: true}],
+    newTodoValue: "",
+  },
   reducer: (action, state) =>
     switch (action) {
-    | SaveTodo(todoItem, title) =>
+    | UpdateTodo(todoItem, title) =>
       ReasonReact.Update({...state, todos: state.todos})
-    | OnChangeTodoValue(newTodoValue) =>
+    | OnChangeNewTodoValue(newTodoValue) =>
       ReasonReact.Update({...state, newTodoValue})
-    | HandleEnterKeyDown => ReasonReact.NoUpdate
+    | HandleEnterKeyDown(13) =>
+      switch (state.newTodoValue) {
+      | "" => ReasonReact.NoUpdate
+      | value =>
+        let todo: Todo_Item.t = {
+          id: string_of_float(Js.Date.now()),
+          title: value,
+          checked: false,
+        };
+        ReasonReact.UpdateWithSideEffects(
+          {...state, todos: [todo, ...state.todos]},
+          self => self.send(""->OnChangeNewTodoValue),
+        );
+      }
+    | DeleteTodo(id) =>
+      let todos = List.filter(todo => todo.Todo_Item.id !== id, state.todos);
+      ReasonReact.Update({...state, todos});
+    // 🔥 when we type another key
+    | HandleEnterKeyDown(_) => ReasonReact.NoUpdate
     },
-  render: self => {
-    <div> <input type_="text" /> </div>;
+  render: ({state, send}) => {
+    let renderTodoItems = (todos, send) =>
+      List.length(todos) < 1 ?
+        ReasonReact.null :
+        List.map(
+          todo =>
+            <Todo_Item
+              key={todo.Todo_Item.id}
+              onDestroy={_event => send(DeleteTodo(todo.Todo_Item.id))}
+              todo
+            />,
+          todos,
+        )
+        ->Array.of_list
+        ->ReasonReact.array;
+
+    <div className=Styles.container>
+      <input
+        type_="text"
+        onChange={event =>
+          send(ReactEvent.Form.target(event)##value->OnChangeNewTodoValue)
+        }
+        value={state.newTodoValue}
+        onKeyDown={event =>
+          send(HandleEnterKeyDown(ReactEvent.Keyboard.which(event)))
+        }
+      />
+      {renderTodoItems(state.todos, send)}
+    </div>;
   },
 };

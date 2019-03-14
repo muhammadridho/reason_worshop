@@ -2,13 +2,24 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
+var List = require("bs-platform/lib/js/list.js");
+var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
+var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
+var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Todo_Item$ReactTemplate = require("./Todo_Item.bs.js");
 
 var container = Css.style(/* :: */[
       Css.display(/* flex */-1010954439),
-      /* [] */0
+      /* :: */[
+        Css.flexDirection(/* column */-963948842),
+        /* :: */[
+          Css.alignItems(/* center */98248149),
+          /* [] */0
+        ]
+      ]
     ]);
 
 var Styles = /* module */[/* container */container];
@@ -26,31 +37,98 @@ function make(_children) {
           /* willUnmount */component[/* willUnmount */6],
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
-          /* render */(function (self) {
-              return React.createElement("div", undefined, React.createElement("input", {
-                              type: "text"
-                            }));
+          /* render */(function (param) {
+              var send = param[/* send */3];
+              var state = param[/* state */1];
+              var renderTodoItems = function (todos, send) {
+                var match = List.length(todos) < 1;
+                if (match) {
+                  return null;
+                } else {
+                  return $$Array.of_list(List.map((function (todo) {
+                                    return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
+                                                      return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
+                                                    }), /* array */[]));
+                                  }), todos));
+                }
+              };
+              return React.createElement("div", {
+                          className: container
+                        }, React.createElement("input", {
+                              type: "text",
+                              value: state[/* newTodoValue */1],
+                              onKeyDown: (function ($$event) {
+                                  return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
+                                }),
+                              onChange: (function ($$event) {
+                                  return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
+                                })
+                            }), renderTodoItems(state[/* todos */0], send));
             }),
           /* initialState */(function (param) {
               return /* record */[
-                      /* todos : [] */0,
+                      /* todos : :: */[
+                        /* record */[
+                          /* id */"sss",
+                          /* title */"ahay",
+                          /* checked */true
+                        ],
+                        /* [] */0
+                      ],
                       /* newTodoValue */""
                     ];
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, state) {
-              if (typeof action === "number") {
-                return /* NoUpdate */0;
-              } else if (action.tag) {
-                return /* Update */Block.__(0, [/* record */[
-                            /* todos */state[/* todos */0],
-                            /* newTodoValue */action[0]
-                          ]]);
-              } else {
-                return /* Update */Block.__(0, [/* record */[
-                            /* todos */state[/* todos */0],
-                            /* newTodoValue */state[/* newTodoValue */1]
-                          ]]);
+              switch (action.tag | 0) {
+                case 0 : 
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */state[/* todos */0],
+                                /* newTodoValue */state[/* newTodoValue */1]
+                              ]]);
+                case 1 : 
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */state[/* todos */0],
+                                /* newTodoValue */action[0]
+                              ]]);
+                case 2 : 
+                    if (action[0] !== 13) {
+                      return /* NoUpdate */0;
+                    } else {
+                      var value = state[/* newTodoValue */1];
+                      if (value === "") {
+                        return /* NoUpdate */0;
+                      } else {
+                        var todo_000 = /* id */Pervasives.string_of_float(Date.now());
+                        var todo = /* record */[
+                          todo_000,
+                          /* title */value,
+                          /* checked */false
+                        ];
+                        return /* UpdateWithSideEffects */Block.__(2, [
+                                  /* record */[
+                                    /* todos : :: */[
+                                      todo,
+                                      state[/* todos */0]
+                                    ],
+                                    /* newTodoValue */state[/* newTodoValue */1]
+                                  ],
+                                  (function (self) {
+                                      return Curry._1(self[/* send */3], /* OnChangeNewTodoValue */Block.__(1, [""]));
+                                    })
+                                ]);
+                      }
+                    }
+                case 3 : 
+                    var id = action[0];
+                    var todos = List.filter((function (todo) {
+                              return todo[/* id */0] !== id;
+                            }))(state[/* todos */0]);
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */todos,
+                                /* newTodoValue */state[/* newTodoValue */1]
+                              ]]);
+                
               }
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]

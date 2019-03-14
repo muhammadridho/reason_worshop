@@ -48,6 +48,11 @@ function make(_children) {
                   return $$Array.of_list(List.map((function (todo) {
                                     return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
                                                       return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
+                                                    }), (function (value) {
+                                                      return Curry._1(send, /* UpdateTodo */Block.__(0, [
+                                                                    todo[/* id */0],
+                                                                    value
+                                                                  ]));
                                                     }), /* array */[]));
                                   }), todos));
                 }
@@ -82,8 +87,22 @@ function make(_children) {
           /* reducer */(function (action, state) {
               switch (action.tag | 0) {
                 case 0 : 
+                    var title = action[1];
+                    var idTarget = action[0];
+                    var newTodoItems = List.map((function (todo) {
+                            var match = todo[/* id */0] === idTarget;
+                            if (match) {
+                              return /* record */[
+                                      /* id */todo[/* id */0],
+                                      /* title */title,
+                                      /* checked */todo[/* checked */2]
+                                    ];
+                            } else {
+                              return todo;
+                            }
+                          }), state[/* todos */0]);
                     return /* Update */Block.__(0, [/* record */[
-                                /* todos */state[/* todos */0],
+                                /* todos */newTodoItems,
                                 /* newTodoValue */state[/* newTodoValue */1]
                               ]]);
                 case 1 : 

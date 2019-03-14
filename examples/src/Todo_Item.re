@@ -9,14 +9,42 @@ type state = {
   inputEditValue: string,
 };
 
-let component = ReasonReact.statelessComponent("Todo_Item");
+type action =
+  | ToggleEdit
+  | OnChangeVal(string);
 
-let make = (~todo, ~onDestroy, _children) => {
+let component = ReasonReact.reducerComponent("Todo_Item");
+
+let make = (~todo, ~onDestroy, ~onUpdate, _children) => {
   ...component,
-  render: _self => {
+  initialState: () => {isEdit: false, inputEditValue: todo.title},
+  reducer: (action, state) => {
+    switch (action) {
+    | ToggleEdit => ReasonReact.Update({...state, isEdit: !state.isEdit})
+    | OnChangeVal(inputEditValue) =>
+      ReasonReact.Update({...state, inputEditValue})
+    };
+  },
+  render: ({state, send}) => {
     <li>
-      <p> {ReasonReact.string(todo.title)} </p>
-      <input type_="text" value="" />
+      <p onDoubleClick={_event => send(ToggleEdit)}>
+        {ReasonReact.string(todo.title)}
+      </p>
+      {state.isEdit ?
+         <input
+           type_="text"
+           value={state.inputEditValue}
+           onChange={event =>
+             send(OnChangeVal(ReactEvent.Form.target(event)##value))
+           }
+           onKeyDown={event =>
+             switch (ReactEvent.Keyboard.which(event)) {
+             | 13 => onUpdate(state.inputEditValue)
+             | _ => Js.log("oh shit")
+             }
+           }
+         /> :
+         ReasonReact.null}
       <button onClick=onDestroy> {ReasonReact.string("hapus")} </button>
     </li>;
   },

@@ -10,7 +10,7 @@ type state = {
 };
 
 type action =
-  | UpdateTodo(Todo_Item.t, string)
+  | UpdateTodo(string, string)
   | OnChangeNewTodoValue(string)
   | HandleEnterKeyDown(int)
   | DeleteTodo(string);
@@ -25,8 +25,13 @@ let make = _children => {
   },
   reducer: (action, state) =>
     switch (action) {
-    | UpdateTodo(todoItem, title) =>
-      ReasonReact.Update({...state, todos: state.todos})
+    | UpdateTodo(idTarget, title) =>
+      let newTodoItems =
+        List.map(
+          todo => todo.Todo_Item.id == idTarget ? {...todo, title} : todo,
+          state.todos,
+        );
+      ReasonReact.Update({...state, todos: newTodoItems});
     | OnChangeNewTodoValue(newTodoValue) =>
       ReasonReact.Update({...state, newTodoValue})
     | HandleEnterKeyDown(13) =>
@@ -58,6 +63,7 @@ let make = _children => {
             <Todo_Item
               key={todo.Todo_Item.id}
               onDestroy={_event => send(DeleteTodo(todo.Todo_Item.id))}
+              onUpdate={value => send(UpdateTodo(todo.Todo_Item.id, value))}
               todo
             />,
           todos,

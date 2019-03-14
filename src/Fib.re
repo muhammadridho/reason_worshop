@@ -1,4 +1,4 @@
-// Solutions 1
+// Solution 1
 
 let rec createFibonacciLists = (num, array) => {
   switch (num) {
@@ -27,7 +27,7 @@ let sumEvenFibonacciNumbers = num => {
   createFibonacciLists(num, defaultFibonacci) |> sumEvenNumbers;
 };
 
-// Solutions 2
+// Solution 2
 let rec getFibonacciNum = num => {
   switch (num) {
   | 0 => 0

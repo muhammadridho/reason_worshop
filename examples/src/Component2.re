@@ -1,4 +1,6 @@
 /* State declaration */
+module ButtonRG = {};
+
 type state = {
   count: int,
   show: bool,
@@ -25,7 +27,7 @@ let make = (~greeting, _children) => {
   reducer: (action, state) =>
     switch (action) {
     | Click => ReasonReact.Update({...state, count: state.count + 1})
-    | Toggle => ReasonReact.Update({...state, show: ! state.show})
+    | Toggle => ReasonReact.Update({...state, show: !state.show})
     },
 
   render: self => {

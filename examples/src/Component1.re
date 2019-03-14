@@ -1,23 +1,44 @@
-/* This is the basic component. */
-let component = ReasonReact.statelessComponent("Component1");
+module ButtonRG = {
+  let component = ReasonReact.statelessComponent("ButtonRGKewl");
 
-/* Your familiar handleClick from ReactJS. This mandatorily takes the payload,
-   then the `self` record, which contains state (none here), `handle`, `reduce`
-   and other utilities */
-let handleClick = (_event, _self) => Js.log("clicked!");
+  let make = (~onClick=?, ~title, _children) => {
+    ...component,
+    render: _self => {
+      <button ?onClick> {ReasonReact.string(title)} </button>;
+    },
+  };
+};
+let renderRgButton = (~title, ~onClick) => {
+  <button onClick> {ReasonReact.string(title)} </button>;
+};
 
-/* `make` is the function that mandatorily takes `children` (if you want to use
-   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:
+type state = int;
 
-   `<Component1 message="hello" />`
+type action =
+  | Increment
+  | Decrement
+  | Reset;
 
-   Which desugars to
+let component = ReasonReact.reducerComponent("Counter");
 
-   `ReasonReact.element(Component1.make(~message="hello", [||]))` */
-let make = (~message, _children) => {
+let make = _children => {
   ...component,
-  render: self =>
-    <div onClick={self.handle(handleClick)}>
-      {ReasonReact.string(message)}
-    </div>,
+  initialState: () => 0,
+  reducer: (action, state) => {
+    switch (action) {
+    | Increment => ReasonReact.Update(state + 1)
+    | Decrement => ReasonReact.Update(state - 1)
+    | Reset => ReasonReact.Update(0)
+    };
+  },
+  render: ({state, send}) => {
+    <div>
+      <p> {ReasonReact.string(string_of_int(state))} </p>
+      <ButtonRG title="Increment" onClick={_ => send(Increment)} />
+      {renderRgButton(~title="Decrement", ~onClick=_ => send(Decrement))}
+      <button onClick={_ => send(Reset)}>
+        {ReasonReact.string("Reset")}
+      </button>
+    </div>;
+  },
 };

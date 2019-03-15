@@ -245,7 +245,10 @@ function make(_children) {
         ];
 }
 
+var a = 2;
+
 exports.Styles = Styles;
 exports.component = component;
 exports.make = make;
+exports.a = a;
 /* container Not a pure module */

@@ -8,7 +8,7 @@ var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 var component = ReasonReact.reducerComponent("Todo_Item");
 
-function make(todo, onDestroy, onUpdate, _children) {
+function make(todo, onDestroy, onUpdate, onToggle, _children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
@@ -23,7 +23,11 @@ function make(todo, onDestroy, onUpdate, _children) {
               var send = param[/* send */3];
               var state = param[/* state */1];
               var match = state[/* isEdit */0];
-              return React.createElement("li", undefined, React.createElement("p", {
+              return React.createElement("li", undefined, React.createElement("input", {
+                              checked: todo[/* checked */2],
+                              type: "checkbox",
+                              onChange: onToggle
+                            }), React.createElement("p", {
                               onDoubleClick: (function (_event) {
                                   return Curry._1(send, /* ToggleEdit */0);
                                 })
@@ -31,16 +35,13 @@ function make(todo, onDestroy, onUpdate, _children) {
                                 type: "text",
                                 value: state[/* inputEditValue */1],
                                 onKeyDown: (function ($$event) {
-                                    var match = $$event.which;
-                                    if (match !== 13) {
-                                      console.log("oh shit");
-                                      return /* () */0;
-                                    } else {
-                                      return Curry._1(onUpdate, state[/* inputEditValue */1]);
-                                    }
+                                    return Curry._1(send, /* OnKeyDown */Block.__(1, [$$event.which]));
+                                  }),
+                                onBlur: (function (_event) {
+                                    return Curry._1(send, /* OnSaveVal */1);
                                   }),
                                 onChange: (function ($$event) {
-                                    return Curry._1(send, /* OnChangeVal */[$$event.target.value]);
+                                    return Curry._1(send, /* OnChangeVal */Block.__(0, [$$event.target.value]));
                                   })
                               }) : null, React.createElement("button", {
                               onClick: onDestroy
@@ -54,15 +55,38 @@ function make(todo, onDestroy, onUpdate, _children) {
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, state) {
-              if (action) {
+              if (typeof action === "number") {
+                if (action === 0) {
+                  return /* Update */Block.__(0, [/* record */[
+                              /* isEdit */!state[/* isEdit */0],
+                              /* inputEditValue */state[/* inputEditValue */1]
+                            ]]);
+                } else {
+                  return /* SideEffects */Block.__(1, [(function (self) {
+                                Curry._1(self[/* send */3], /* ToggleEdit */0);
+                                return Curry._1(onUpdate, state[/* inputEditValue */1]);
+                              })]);
+                }
+              } else if (action.tag) {
+                var num = action[0];
+                if (num !== 13) {
+                  if (num !== 27) {
+                    return /* NoUpdate */0;
+                  } else {
+                    return /* Update */Block.__(0, [/* record */[
+                                /* isEdit */false,
+                                /* inputEditValue */state[/* inputEditValue */1]
+                              ]]);
+                  }
+                } else {
+                  return /* SideEffects */Block.__(1, [(function (param) {
+                                return Curry._1(param[/* send */3], /* OnSaveVal */1);
+                              })]);
+                }
+              } else {
                 return /* Update */Block.__(0, [/* record */[
                             /* isEdit */state[/* isEdit */0],
                             /* inputEditValue */action[0]
-                          ]]);
-              } else {
-                return /* Update */Block.__(0, [/* record */[
-                            /* isEdit */!state[/* isEdit */0],
-                            /* inputEditValue */state[/* inputEditValue */1]
                           ]]);
               }
             }),

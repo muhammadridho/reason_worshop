@@ -11,11 +11,13 @@ type state = {
 
 type action =
   | ToggleEdit
-  | OnChangeVal(string);
+  | OnChangeVal(string)
+  | OnSaveVal
+  | OnKeyDown(int);
 
 let component = ReasonReact.reducerComponent("Todo_Item");
 
-let make = (~todo, ~onDestroy, ~onUpdate, _children) => {
+let make = (~todo, ~onDestroy, ~onUpdate, ~onToggle, _children) => {
   ...component,
   initialState: () => {isEdit: false, inputEditValue: todo.title},
   reducer: (action, state) => {
@@ -23,10 +25,29 @@ let make = (~todo, ~onDestroy, ~onUpdate, _children) => {
     | ToggleEdit => ReasonReact.Update({...state, isEdit: !state.isEdit})
     | OnChangeVal(inputEditValue) =>
       ReasonReact.Update({...state, inputEditValue})
+    | OnSaveVal =>
+      ReasonReact.SideEffects(
+        self => {
+          self.send(ToggleEdit);
+          onUpdate(state.inputEditValue);
+        },
+      )
+    | OnKeyDown(num) =>
+      switch (num) {
+      | 27 =>
+        ReasonReact.Update({
+          ...state,
+          inputEditValue: state.inputEditValue,
+          isEdit: false,
+        })
+      | 13 => ReasonReact.SideEffects(({send}) => send(OnSaveVal))
+      | _ => ReasonReact.NoUpdate
+      }
     };
   },
   render: ({state, send}) => {
     <li>
+      <input type_="checkbox" checked={todo.checked} onChange=onToggle />
       <p onDoubleClick={_event => send(ToggleEdit)}>
         {ReasonReact.string(todo.title)}
       </p>
@@ -38,11 +59,9 @@ let make = (~todo, ~onDestroy, ~onUpdate, _children) => {
              send(OnChangeVal(ReactEvent.Form.target(event)##value))
            }
            onKeyDown={event =>
-             switch (ReactEvent.Keyboard.which(event)) {
-             | 13 => onUpdate(state.inputEditValue)
-             | _ => Js.log("oh shit")
-             }
+             send(ReactEvent.Keyboard.which(event)->OnKeyDown)
            }
+           onBlur={_event => send(OnSaveVal)}
          /> :
          ReasonReact.null}
       <button onClick=onDestroy> {ReasonReact.string("hapus")} </button>

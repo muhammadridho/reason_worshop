@@ -10,6 +10,8 @@ var React = require("react");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Todo_Item$ReactTemplate = require("./Todo_Item.bs.js");
+var Todo_Footer$ReactTemplate = require("./Todo_Footer.bs.js");
+var Todo_AddInput$ReactTemplate = require("./Todo_AddInput.bs.js");
 
 var container = Css.style(/* :: */[
       Css.display(/* flex */-1010954439),
@@ -45,6 +47,18 @@ function make(_children) {
                 if (match) {
                   return null;
                 } else {
+                  var __x = List.filter((function (todo) {
+                            var match = state[/* selectedFilter */2];
+                            switch (match) {
+                              case 0 : 
+                                  return true;
+                              case 1 : 
+                                  return !todo[/* checked */2];
+                              case 2 : 
+                                  return todo[/* checked */2];
+                              
+                            }
+                          }))(state[/* todos */0]);
                   return $$Array.of_list(List.map((function (todo) {
                                     return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
                                                       return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
@@ -53,22 +67,21 @@ function make(_children) {
                                                                     todo[/* id */0],
                                                                     value
                                                                   ]));
+                                                    }), (function (_event) {
+                                                      return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
                                                     }), /* array */[]));
-                                  }), todos));
+                                  }), __x));
                 }
               };
               return React.createElement("div", {
                           className: container
-                        }, React.createElement("input", {
-                              type: "text",
-                              value: state[/* newTodoValue */1],
-                              onKeyDown: (function ($$event) {
-                                  return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
-                                }),
-                              onChange: (function ($$event) {
-                                  return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
-                                })
-                            }), renderTodoItems(state[/* todos */0], send));
+                        }, ReasonReact.element(undefined, undefined, Todo_AddInput$ReactTemplate.make(state[/* newTodoValue */1], (function ($$event) {
+                                    return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
+                                  }), (function ($$event) {
+                                    return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
+                                  }), /* array */[])), React.createElement("ul", undefined, renderTodoItems(state[/* todos */0], send)), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
+                                    return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
+                                  }), /* array */[])));
             }),
           /* initialState */(function (param) {
               return /* record */[
@@ -80,7 +93,8 @@ function make(_children) {
                         ],
                         /* [] */0
                       ],
-                      /* newTodoValue */""
+                      /* newTodoValue */"",
+                      /* selectedFilter : All */0
                     ];
             }),
           /* retainedProps */component[/* retainedProps */11],
@@ -103,18 +117,21 @@ function make(_children) {
                           }), state[/* todos */0]);
                     return /* Update */Block.__(0, [/* record */[
                                 /* todos */newTodoItems,
-                                /* newTodoValue */state[/* newTodoValue */1]
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */state[/* selectedFilter */2]
                               ]]);
                 case 1 : 
                     return /* Update */Block.__(0, [/* record */[
                                 /* todos */state[/* todos */0],
-                                /* newTodoValue */action[0]
+                                /* newTodoValue */action[0],
+                                /* selectedFilter */state[/* selectedFilter */2]
                               ]]);
                 case 2 : 
                     if (action[0] !== 13) {
                       return /* NoUpdate */0;
                     } else {
-                      var value = state[/* newTodoValue */1];
+                      var state$1 = state;
+                      var value = state$1[/* newTodoValue */1];
                       if (value === "") {
                         return /* NoUpdate */0;
                       } else {
@@ -128,9 +145,10 @@ function make(_children) {
                                   /* record */[
                                     /* todos : :: */[
                                       todo,
-                                      state[/* todos */0]
+                                      state$1[/* todos */0]
                                     ],
-                                    /* newTodoValue */state[/* newTodoValue */1]
+                                    /* newTodoValue */state$1[/* newTodoValue */1],
+                                    /* selectedFilter */state$1[/* selectedFilter */2]
                                   ],
                                   (function (self) {
                                       return Curry._1(self[/* send */3], /* OnChangeNewTodoValue */Block.__(1, [""]));
@@ -140,12 +158,38 @@ function make(_children) {
                     }
                 case 3 : 
                     var id = action[0];
-                    var todos = List.filter((function (todo) {
+                    var newTodoItems$1 = List.filter((function (todo) {
                               return todo[/* id */0] !== id;
                             }))(state[/* todos */0]);
                     return /* Update */Block.__(0, [/* record */[
-                                /* todos */todos,
-                                /* newTodoValue */state[/* newTodoValue */1]
+                                /* todos */newTodoItems$1,
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */state[/* selectedFilter */2]
+                              ]]);
+                case 4 : 
+                    var idTarget$1 = action[0];
+                    var newTodoItems$2 = List.map((function (todo) {
+                            var match = todo[/* id */0] === idTarget$1;
+                            if (match) {
+                              return /* record */[
+                                      /* id */todo[/* id */0],
+                                      /* title */todo[/* title */1],
+                                      /* checked */!todo[/* checked */2]
+                                    ];
+                            } else {
+                              return todo;
+                            }
+                          }), state[/* todos */0]);
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */newTodoItems$2,
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */state[/* selectedFilter */2]
+                              ]]);
+                case 5 : 
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */state[/* todos */0],
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */action[0]
                               ]]);
                 
               }

@@ -1,13 +1,20 @@
 module Styles = {
   /*
-     - Promise - Js.Promise | Lwt Async
-     - Fetch - @glenssl/bs-fetch |
-     - Normalization - @lennsl/bs-json | yojson
-     - Validation
+        - Promise - Js.Promise | Lwt Async
+        - Fetch - @glenssl/bs-fetch |
 
 
-   */
+        - Normalization - @lennsl/bs-json | yojson
+        - Validation
+
+   fetch(string, {
+     headers: {
+       method: Post
+     }
+   })
+      */
   open Css;
+
   let container =
     style([display(`flex), flexDirection(`column), alignItems(`center)]);
 
@@ -136,8 +143,33 @@ let make = _children => {
             }
           />
           <ul className=Styles.listContainer>
-            {renderTodoItems(state.todos, send)}
-          </ul>
+
+              <Get>
+                ...{todoState =>
+                  switch (todoState) {
+                  | Loading => ReasonReact.string("loading lho")
+                  | Error(message) => ReasonReact.string(message)
+                  | Idle => ReasonReact.null
+                  | Loaded(todos) =>
+                    todos
+                    |> List.map(todo =>
+                         <Todo_Item
+                           key={todo.id}
+                           onDestroy={_event => send(DeleteTodo(todo.id))}
+                           onUpdate={value =>
+                             send(UpdateTodo(todo.id, value))
+                           }
+                           onToggle={_event => send(ToggleCheck(todo.id))}
+                           todo
+                         />
+                       )
+                    |> Array.of_list
+                    |> ReasonReact.array
+                  }
+                }
+              </Get>
+            </ul>
+            // {renderTodoItems(state.todos, send)}
           <Todo_Footer
             todoLength={List.length(state.todos)}
             onFilter={selectedFilter => send(OnFilter(selectedFilter))}

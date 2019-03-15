@@ -11,3 +11,10 @@ let read_t = json => {
 };
 
 let read_response = Json.Decode.list(read_t);
+
+let write_t = t =>
+  Json.Encode.object_([
+    ("id", Json.Encode.string(t.id)),
+    ("item", Json.Encode.string(t.title)),
+    ("checked", Json.Encode.bool(t.checked)),
+  ]);

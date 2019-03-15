@@ -2,6 +2,7 @@
 'use strict';
 
 var Json_decode = require("@glennsl/bs-json/src/Json_decode.bs.js");
+var Json_encode = require("@glennsl/bs-json/src/Json_encode.bs.js");
 
 function read_t(json) {
   return /* record */[
@@ -15,6 +16,29 @@ function read_response(param) {
   return Json_decode.list(read_t, param);
 }
 
+function write_t(t) {
+  return Json_encode.object_(/* :: */[
+              /* tuple */[
+                "id",
+                t[/* id */0]
+              ],
+              /* :: */[
+                /* tuple */[
+                  "item",
+                  t[/* title */1]
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "checked",
+                    t[/* checked */2]
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]);
+}
+
 exports.read_t = read_t;
 exports.read_response = read_response;
+exports.write_t = write_t;
 /* No side effect */

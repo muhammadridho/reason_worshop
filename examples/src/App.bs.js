@@ -9,6 +9,7 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Get$ReactTemplate = require("./Get.bs.js");
 var Todo_Item$ReactTemplate = require("./Todo_Item.bs.js");
 var Todo_Footer$ReactTemplate = require("./Todo_Footer.bs.js");
 var Todo_AddInput$ReactTemplate = require("./Todo_AddInput.bs.js");
@@ -83,37 +84,6 @@ function make(_children) {
           /* render */(function (param) {
               var send = param[/* send */3];
               var state = param[/* state */1];
-              var renderTodoItems = function (todos, send) {
-                var match = List.length(todos) < 1;
-                if (match) {
-                  return null;
-                } else {
-                  var __x = List.filter((function (todo) {
-                            var match = state[/* selectedFilter */2];
-                            switch (match) {
-                              case 0 : 
-                                  return true;
-                              case 1 : 
-                                  return !todo[/* checked */2];
-                              case 2 : 
-                                  return todo[/* checked */2];
-                              
-                            }
-                          }))(state[/* todos */0]);
-                  return $$Array.of_list(List.map((function (todo) {
-                                    return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
-                                                      return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
-                                                    }), (function (value) {
-                                                      return Curry._1(send, /* UpdateTodo */Block.__(0, [
-                                                                    todo[/* id */0],
-                                                                    value
-                                                                  ]));
-                                                    }), (function (_event) {
-                                                      return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
-                                                    }), /* array */[]));
-                                  }), __x));
-                }
-              };
               return React.createElement("div", {
                           className: container
                         }, React.createElement("h1", {
@@ -126,7 +96,30 @@ function make(_children) {
                                         return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
                                       }), /* array */[])), React.createElement("ul", {
                                   className: listContainer
-                                }, renderTodoItems(state[/* todos */0], send)), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
+                                }, ReasonReact.element(undefined, undefined, Get$ReactTemplate.make((function (todoState) {
+                                            if (typeof todoState === "number") {
+                                              if (todoState === 0) {
+                                                return null;
+                                              } else {
+                                                return "loading lho";
+                                              }
+                                            } else if (todoState.tag) {
+                                              return $$Array.of_list(List.map((function (todo) {
+                                                                return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
+                                                                                  return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
+                                                                                }), (function (value) {
+                                                                                  return Curry._1(send, /* UpdateTodo */Block.__(0, [
+                                                                                                todo[/* id */0],
+                                                                                                value
+                                                                                              ]));
+                                                                                }), (function (_event) {
+                                                                                  return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
+                                                                                }), /* array */[]));
+                                                              }), todoState[0]));
+                                            } else {
+                                              return todoState[0];
+                                            }
+                                          })))), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
                                         return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
                                       }), /* array */[]))));
             }),

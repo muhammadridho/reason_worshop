@@ -5,7 +5,6 @@ var Css = require("bs-css/src/Css.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
-var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 var container = Css.style(/* :: */[
@@ -252,11 +251,6 @@ var Styles = /* module */[
   /* inputText */inputText
 ];
 
-function setSectionRef(theRef, param) {
-  param[/* state */1][/* inputText */2][0] = (theRef == null) ? undefined : Caml_option.some(theRef);
-  return /* () */0;
-}
-
 var component = ReasonReact.reducerComponent("Todo_Item");
 
 function make(todo, onDestroy, onUpdate, onToggle, _children) {
@@ -280,10 +274,6 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
                             }, React.createElement("div", {
                                   className: checkmarkIcon
                                 })), match ? React.createElement("input", {
-                                ref: (function ($$event) {
-                                    console.log($$event);
-                                    return /* () */0;
-                                  }),
                                 className: inputText,
                                 type: "text",
                                 value: self[/* state */1][/* inputEditValue */1],
@@ -310,7 +300,7 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
               return /* record */[
                       /* isEdit */false,
                       /* inputEditValue */todo[/* title */1],
-                      /* inputText : record */[/* contents */undefined]
+                      /* inputRef : record */[/* contents */undefined]
                     ];
             }),
           /* retainedProps */component[/* retainedProps */11],
@@ -320,7 +310,7 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
                   return /* Update */Block.__(0, [/* record */[
                               /* isEdit */!state[/* isEdit */0],
                               /* inputEditValue */state[/* inputEditValue */1],
-                              /* inputText */state[/* inputText */2]
+                              /* inputRef */state[/* inputRef */2]
                             ]]);
                 } else {
                   return /* SideEffects */Block.__(1, [(function (self) {
@@ -337,7 +327,7 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
                     return /* Update */Block.__(0, [/* record */[
                                 /* isEdit */false,
                                 /* inputEditValue */state[/* inputEditValue */1],
-                                /* inputText */state[/* inputText */2]
+                                /* inputRef */state[/* inputRef */2]
                               ]]);
                   }
                 } else {
@@ -349,7 +339,7 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
                 return /* Update */Block.__(0, [/* record */[
                             /* isEdit */state[/* isEdit */0],
                             /* inputEditValue */action[0],
-                            /* inputText */state[/* inputText */2]
+                            /* inputRef */state[/* inputRef */2]
                           ]]);
               }
             }),
@@ -358,7 +348,6 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
 }
 
 exports.Styles = Styles;
-exports.setSectionRef = setSectionRef;
 exports.component = component;
 exports.make = make;
 /* container Not a pure module */

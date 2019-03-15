@@ -7,7 +7,7 @@ type t = {
 type state = {
   isEdit: bool,
   inputEditValue: string,
-  inputText: ref(option(ReasonReact.reactRef)),
+  inputRef: ref(option(ReasonReact.reactRef)),
 };
 
 type action =
@@ -85,11 +85,6 @@ module Styles = {
     ]);
 };
 
-let setSectionRef = (theRef, {ReasonReact.state}) => {
-  state.inputText := Js.Nullable.toOption(theRef);
-                                                  /* wondering about Js.Nullable.toOption? See the note below */
-};
-
 let component = ReasonReact.reducerComponent("Todo_Item");
 
 let make = (~todo, ~onDestroy, ~onUpdate, ~onToggle, _children) => {
@@ -97,7 +92,7 @@ let make = (~todo, ~onDestroy, ~onUpdate, ~onToggle, _children) => {
   initialState: () => {
     isEdit: false,
     inputEditValue: todo.title,
-    inputText: ref(None),
+    inputRef: ref(None),
   },
   reducer: (action, state) => {
     switch (action) {
@@ -142,7 +137,6 @@ let make = (~todo, ~onDestroy, ~onUpdate, ~onToggle, _children) => {
              self.send(ReactEvent.Keyboard.which(event)->OnKeyDown)
            }
            onBlur={_event => self.send(OnSaveVal)}
-           ref={self.handle(setSectionRef)}
          /> :
          <p
            className=Styles.text

@@ -280,10 +280,6 @@ function make(todo, onDestroy, onUpdate, onToggle, _children) {
                             }, React.createElement("div", {
                                   className: checkmarkIcon
                                 })), match ? React.createElement("input", {
-                                ref: (function ($$event) {
-                                    console.log($$event);
-                                    return /* () */0;
-                                  }),
                                 className: inputText,
                                 type: "text",
                                 value: self[/* state */1][/* inputEditValue */1],

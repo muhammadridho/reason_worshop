@@ -142,7 +142,6 @@ let make = (~todo, ~onDestroy, ~onUpdate, ~onToggle, _children) => {
              self.send(ReactEvent.Keyboard.which(event)->OnKeyDown)
            }
            onBlur={_event => self.send(OnSaveVal)}
-           ref={self.handle(setSectionRef)}
          /> :
          <p
            className=Styles.text

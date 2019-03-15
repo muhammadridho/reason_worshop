@@ -49,11 +49,7 @@ let make = _children => {
   };
   {
     ...component,
-    initialState: () => {
-      todos: [{id: "sss", title: "ahay", checked: true}],
-      newTodoValue: "",
-      selectedFilter: All,
-    },
+    initialState: () => {todos: [], newTodoValue: "", selectedFilter: All},
     reducer: (action, state) =>
       switch (action) {
       | UpdateTodo(idTarget, title) =>

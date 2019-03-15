@@ -132,14 +132,7 @@ function make(_children) {
             }),
           /* initialState */(function (param) {
               return /* record */[
-                      /* todos : :: */[
-                        /* record */[
-                          /* id */"sss",
-                          /* title */"ahay",
-                          /* checked */true
-                        ],
-                        /* [] */0
-                      ],
+                      /* todos : [] */0,
                       /* newTodoValue */"",
                       /* selectedFilter : All */0
                     ];

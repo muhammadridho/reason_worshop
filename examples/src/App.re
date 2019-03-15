@@ -1,4 +1,12 @@
 module Styles = {
+  /*
+     - Promise - Js.Promise | Lwt Async
+     - Fetch - @glenssl/bs-fetch |
+     - Normalization - @lennsl/bs-json | yojson
+     - Validation
+
+
+   */
   open Css;
   let container =
     style([display(`flex), flexDirection(`column), alignItems(`center)]);
@@ -16,7 +24,7 @@ module Styles = {
 };
 
 type state = {
-  todos: list(Todo_Item.t),
+  todos: list(Model.t),
   newTodoValue: string,
   selectedFilter: Todo_Footer.filter,
 };
@@ -36,7 +44,7 @@ let make = _children => {
     switch (state.newTodoValue) {
     | "" => ReasonReact.NoUpdate
     | value =>
-      let todo: Todo_Item.t = {
+      let todo: Model.t = {
         id: string_of_float(Js.Date.now()),
         title: value,
         checked: false,
@@ -55,7 +63,7 @@ let make = _children => {
       | UpdateTodo(idTarget, title) =>
         let newTodoItems =
           List.map(
-            todo => todo.Todo_Item.id == idTarget ? {...todo, title} : todo,
+            (todo: Model.t) => todo.id == idTarget ? {...todo, title} : todo,
             state.todos,
           );
         ReasonReact.Update({...state, todos: newTodoItems});
@@ -69,14 +77,13 @@ let make = _children => {
 
       | DeleteTodo(id) =>
         let newTodoItems =
-          List.filter(todo => todo.Todo_Item.id !== id, state.todos);
+          List.filter((todo: Model.t) => todo.id !== id, state.todos);
         ReasonReact.Update({...state, todos: newTodoItems});
       | ToggleCheck(idTarget) =>
         let newTodoItems =
           List.map(
-            todo =>
-              todo.Todo_Item.id == idTarget ?
-                {...todo, checked: !todo.checked} : todo,
+            (todo: Model.t) =>
+              todo.id == idTarget ? {...todo, checked: !todo.checked} : todo,
             state.todos,
           );
 
@@ -85,14 +92,15 @@ let make = _children => {
         ReasonReact.Update({...state, selectedFilter: filterType})
       },
     render: ({state, send}) => {
+      open Model;
       let renderTodoItems = (todos, send) =>
         List.length(todos) < 1 ?
           ReasonReact.null :
           List.filter(
             todo =>
               switch (state.selectedFilter) {
-              | Active => !todo.Todo_Item.checked
-              | Completed => todo.Todo_Item.checked
+              | Active => !todo.checked
+              | Completed => todo.checked
               | All => true
               },
             state.todos,
@@ -100,12 +108,10 @@ let make = _children => {
           |> List.map(
                todo =>
                  <Todo_Item
-                   key={todo.Todo_Item.id}
-                   onDestroy={_event => send(DeleteTodo(todo.Todo_Item.id))}
-                   onUpdate={value =>
-                     send(UpdateTodo(todo.Todo_Item.id, value))
-                   }
-                   onToggle={_event => send(ToggleCheck(todo.Todo_Item.id))}
+                   key={todo.id}
+                   onDestroy={_event => send(DeleteTodo(todo.id))}
+                   onUpdate={value => send(UpdateTodo(todo.id, value))}
+                   onToggle={_event => send(ToggleCheck(todo.id))}
                    todo
                  />,
                _,

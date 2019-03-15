@@ -1,8 +1,4 @@
-type t = {
-  id: string,
-  title: string,
-  checked: bool,
-};
+open Model;
 
 type state = {
   isEdit: bool,

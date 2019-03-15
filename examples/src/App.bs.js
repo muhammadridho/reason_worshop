@@ -24,7 +24,48 @@ var container = Css.style(/* :: */[
       ]
     ]);
 
-var Styles = /* module */[/* container */container];
+var todoContainer = Css.style(/* :: */[
+      Css.width(/* `percent */[
+            -119887163,
+            80
+          ]),
+      /* :: */[
+        Css.maxWidth(/* `rem */[
+              5691738,
+              30
+            ]),
+        /* :: */[
+          Css.display(/* flex */-1010954439),
+          /* :: */[
+            Css.flexDirection(/* column */-963948842),
+            /* [] */0
+          ]
+        ]
+      ]
+    ]);
+
+var title = Css.style(/* :: */[
+      Css.fontSize(/* `rem */[
+            5691738,
+            3
+          ]),
+      /* [] */0
+    ]);
+
+var listContainer = Css.style(/* :: */[
+      Css.paddingLeft(/* `px */[
+            25096,
+            0
+          ]),
+      /* [] */0
+    ]);
+
+var Styles = /* module */[
+  /* container */container,
+  /* todoContainer */todoContainer,
+  /* title */title,
+  /* listContainer */listContainer
+];
 
 var component = ReasonReact.reducerComponent("App_Root");
 
@@ -75,13 +116,19 @@ function make(_children) {
               };
               return React.createElement("div", {
                           className: container
-                        }, ReasonReact.element(undefined, undefined, Todo_AddInput$ReactTemplate.make(state[/* newTodoValue */1], (function ($$event) {
-                                    return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
-                                  }), (function ($$event) {
-                                    return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
-                                  }), /* array */[])), React.createElement("ul", undefined, renderTodoItems(state[/* todos */0], send)), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
-                                    return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
-                                  }), /* array */[])));
+                        }, React.createElement("h1", {
+                              className: title
+                            }, "Todo Jadi Jadian"), React.createElement("div", {
+                              className: todoContainer
+                            }, ReasonReact.element(undefined, undefined, Todo_AddInput$ReactTemplate.make(state[/* newTodoValue */1], (function ($$event) {
+                                        return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
+                                      }), (function ($$event) {
+                                        return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
+                                      }), /* array */[])), React.createElement("ul", {
+                                  className: listContainer
+                                }, renderTodoItems(state[/* todos */0], send)), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
+                                        return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
+                                      }), /* array */[]))));
             }),
           /* initialState */(function (param) {
               return /* record */[

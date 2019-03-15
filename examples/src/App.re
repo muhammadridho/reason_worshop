@@ -2,6 +2,17 @@ module Styles = {
   open Css;
   let container =
     style([display(`flex), flexDirection(`column), alignItems(`center)]);
+
+  let todoContainer =
+    style([
+      width(`percent(80.)),
+      maxWidth(`rem(30.)),
+      display(`flex),
+      flexDirection(`column),
+    ]);
+  let title = style([fontSize(`rem(3.))]);
+
+  let listContainer = style([paddingLeft(`px(0))]);
 };
 
 type state = {
@@ -107,20 +118,29 @@ let make = _children => {
           |> ReasonReact.array;
 
       <div className=Styles.container>
-        <Todo_AddInput
-          value={state.newTodoValue}
-          onChange={event =>
-            send(ReactEvent.Form.target(event)##value->OnChangeNewTodoValue)
-          }
-          onKeyDown={event =>
-            send(HandleEnterKeyDown(ReactEvent.Keyboard.which(event)))
-          }
-        />
-        <ul> {renderTodoItems(state.todos, send)} </ul>
-        <Todo_Footer
-          todoLength={List.length(state.todos)}
-          onFilter={selectedFilter => send(OnFilter(selectedFilter))}
-        />
+        <h1 className=Styles.title>
+          {ReasonReact.string("Todo Jadi Jadian")}
+        </h1>
+        <div className=Styles.todoContainer>
+          <Todo_AddInput
+            value={state.newTodoValue}
+            onChange={event =>
+              send(
+                ReactEvent.Form.target(event)##value->OnChangeNewTodoValue,
+              )
+            }
+            onKeyDown={event =>
+              send(HandleEnterKeyDown(ReactEvent.Keyboard.which(event)))
+            }
+          />
+          <ul className=Styles.listContainer>
+            {renderTodoItems(state.todos, send)}
+          </ul>
+          <Todo_Footer
+            todoLength={List.length(state.todos)}
+            onFilter={selectedFilter => send(OnFilter(selectedFilter))}
+          />
+        </div>
       </div>;
     },
   };

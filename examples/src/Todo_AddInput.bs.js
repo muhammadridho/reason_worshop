@@ -3,6 +3,7 @@
 
 var Css = require("bs-css/src/Css.js");
 var React = require("react");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 var component = ReasonReact.statelessComponent("Todo_AddInput");
@@ -35,7 +36,7 @@ var input = Css.style(/* :: */[
 
 var Styles = /* module */[/* input */input];
 
-function make(value, onChange, onKeyDown, _children) {
+function make(value, onChange, onKeyDown, disabled, _children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
@@ -47,13 +48,17 @@ function make(value, onChange, onKeyDown, _children) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (_self) {
-              return React.createElement("input", {
-                          className: input,
-                          type: "text",
-                          value: value,
-                          onKeyDown: onKeyDown,
-                          onChange: onChange
-                        });
+              var tmp = {
+                className: input,
+                type: "text",
+                value: value,
+                onKeyDown: onKeyDown,
+                onChange: onChange
+              };
+              if (disabled !== undefined) {
+                tmp.disabled = Caml_option.valFromOption(disabled);
+              }
+              return React.createElement("input", tmp);
             }),
           /* initialState */component[/* initialState */10],
           /* retainedProps */component[/* retainedProps */11],

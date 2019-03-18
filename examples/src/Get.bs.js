@@ -30,27 +30,30 @@ function make(onCompleted, children) {
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, _state) {
               if (typeof action === "number") {
-                if (action !== 0) {
-                  return /* Update */Block.__(0, [/* Loaded */2]);
-                } else {
-                  return /* UpdateWithSideEffects */Block.__(2, [
-                            /* Loading */1,
-                            (function (self) {
-                                fetch("http://localhost:3000/todos").then((function (prim) {
-                                            return prim.json();
-                                          })).then((function (response) {
-                                          var todos = Model$ReactTemplate.read_response(response);
-                                          Curry._1(onCompleted, todos);
-                                          return Promise.resolve(Curry._1(self[/* send */3], /* FetchSucceed */1));
-                                        })).catch((function (_error) {
-                                        return Promise.resolve(Curry._1(self[/* send */3], /* FetchFailed */["Fetch todos failed"]));
-                                      }));
-                                return /* () */0;
-                              })
-                          ]);
-                }
-              } else {
+                return /* UpdateWithSideEffects */Block.__(2, [
+                          /* Loading */1,
+                          (function (self) {
+                              fetch("http://localhost:3000/todos").then((function (prim) {
+                                          return prim.json();
+                                        })).then((function (response) {
+                                        var todos = Model$ReactTemplate.read_response(response);
+                                        return Promise.resolve(Curry._1(self[/* send */3], /* FetchSucceed */Block.__(0, [todos])));
+                                      })).catch((function (_error) {
+                                      return Promise.resolve(Curry._1(self[/* send */3], /* FetchFailed */Block.__(1, ["Fetch todos failed"])));
+                                    }));
+                              return /* () */0;
+                            })
+                        ]);
+              } else if (action.tag) {
                 return /* Update */Block.__(0, [/* Error */[action[0]]]);
+              } else {
+                var todos = action[0];
+                return /* UpdateWithSideEffects */Block.__(2, [
+                          /* Loaded */2,
+                          (function (_self) {
+                              return Curry._1(onCompleted, todos);
+                            })
+                        ]);
               }
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]

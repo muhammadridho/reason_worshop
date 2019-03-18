@@ -6,7 +6,7 @@ type state =
 
 type action =
   | FetchRequested
-  | FetchSucceed
+  | FetchSucceed(list(Model.t))
   | FetchFailed(string);
 
 let component = ReasonReact.reducerComponent("Get");
@@ -25,8 +25,7 @@ let make = (~onCompleted, children) => {
             |> then_(Bs_fetch.Response.json)
             |> then_(response => {
                  let todos = Model.read_response(response);
-                 onCompleted(todos)
-                 self.send(FetchSucceed) |> resolve;
+                 self.send(FetchSucceed(todos)) |> resolve;
                })
             |> catch(_error =>
                  self.send(FetchFailed("Fetch todos failed")) |> resolve
@@ -34,7 +33,7 @@ let make = (~onCompleted, children) => {
             |> ignore
           ),
       )
-    | FetchSucceed => ReasonReact.Update(Loaded)
+    | FetchSucceed(todos) => ReasonReact.UpdateWithSideEffects(Loaded, (_self) => onCompleted(todos))
     | FetchFailed(message) => ReasonReact.Update(Error(message))
     };
   },

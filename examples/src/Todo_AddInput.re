@@ -9,9 +9,9 @@ module Styles = {
       focus([outlineWidth(`zero), borderColor(`hex("000000"))]),
     ]);
 };
-let make = (~value, ~onChange, ~onKeyDown, _children) => {
+let make = (~value, ~onChange, ~onKeyDown ,~disabled=?, _children) => {
   ...component,
   render: _self => {
-    <input className=Styles.input type_="text" onChange value onKeyDown />;
+    <input className=Styles.input type_="text" onChange value onKeyDown ?disabled />;
   },
 };

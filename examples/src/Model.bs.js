@@ -16,6 +16,14 @@ function read_response(param) {
   return Json_decode.list(read_t, param);
 }
 
+function read_todo_t(json) {
+  return /* record */[
+          /* id */Json_decode.field("id", Json_decode.string, json),
+          /* title */Json_decode.field("item", Json_decode.string, json),
+          /* checked */Json_decode.field("checked", Json_decode.bool, json)
+        ];
+}
+
 function write_t(t) {
   return Json_encode.object_(/* :: */[
               /* tuple */[
@@ -40,5 +48,6 @@ function write_t(t) {
 
 exports.read_t = read_t;
 exports.read_response = read_response;
+exports.read_todo_t = read_todo_t;
 exports.write_t = write_t;
 /* No side effect */

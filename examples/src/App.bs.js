@@ -2,18 +2,15 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
-var Json = require("@glennsl/bs-json/src/Json.bs.js");
 var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
-var Fetch = require("bs-fetch/src/Fetch.js");
 var React = require("react");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
-var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Get$ReactTemplate = require("./Get.bs.js");
-var Model$ReactTemplate = require("./Model.bs.js");
+var Post$ReactTemplate = require("./Post.bs.js");
 var Todo_Item$ReactTemplate = require("./Todo_Item.bs.js");
 var Todo_Footer$ReactTemplate = require("./Todo_Footer.bs.js");
 var Todo_AddInput$ReactTemplate = require("./Todo_AddInput.bs.js");
@@ -72,27 +69,21 @@ var Styles = /* module */[
   /* listContainer */listContainer
 ];
 
-function sendRequest(param) {
-  var todo_000 = /* id */Pervasives.string_of_float(Date.now());
-  var todo = /* record */[
-    todo_000,
-    /* title */"sss",
-    /* checked */false
-  ];
-  var d = Json.stringify(Model$ReactTemplate.write_t(todo));
-  fetch("http://localhost:3000/todos", Fetch.RequestInit[/* make */0](/* Post */2, {
-                  "Content-Type": "application/json"
-                }, Caml_option.some(d), undefined, undefined, undefined, /* Include */2, undefined, undefined, undefined, undefined)(/* () */0)).then((function (response) {
-            return Promise.resolve((console.log(response), /* () */0));
-          })).catch((function (error) {
-          return Promise.resolve((console.log(error), /* () */0));
-        }));
-  return /* () */0;
-}
-
 var component = ReasonReact.reducerComponent("App_Root");
 
 function make(_children) {
+  var handleKeyOnSave = function (state) {
+    var value = state[/* newTodoValue */1];
+    if (value === "") {
+      return undefined;
+    } else {
+      return /* record */[
+              /* id */Pervasives.string_of_float(Date.now()),
+              /* title */value,
+              /* checked */false
+            ];
+    }
+  };
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
@@ -112,11 +103,25 @@ function make(_children) {
                               className: title
                             }, "Todo Jadi Jadian"), React.createElement("div", {
                               className: todoContainer
-                            }, ReasonReact.element(undefined, undefined, Todo_AddInput$ReactTemplate.make(state[/* newTodoValue */1], (function ($$event) {
-                                        return Curry._1(send, /* OnChangeNewTodoValue */Block.__(1, [$$event.target.value]));
-                                      }), (function ($$event) {
-                                        return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
-                                      }), /* array */[])), React.createElement("ul", {
+                            }, ReasonReact.element(undefined, undefined, Post$ReactTemplate.make((function (status, submit) {
+                                        return ReasonReact.element(undefined, undefined, Todo_AddInput$ReactTemplate.make(state[/* newTodoValue */1], (function ($$event) {
+                                                          return Curry._1(send, /* OnChangeNewTodoValue */Block.__(2, [$$event.target.value]));
+                                                        }), (function ($$event) {
+                                                          var match = $$event.which;
+                                                          if (match !== 13) {
+                                                            return /* () */0;
+                                                          } else {
+                                                            var match$1 = handleKeyOnSave(state);
+                                                            if (match$1 !== undefined) {
+                                                              return Curry._2(submit, match$1, (function (responseTodo) {
+                                                                            return Curry._1(send, /* AddTodo */Block.__(1, [responseTodo]));
+                                                                          }));
+                                                            } else {
+                                                              return /* () */0;
+                                                            }
+                                                          }
+                                                        }), status ? true : false, /* array */[]));
+                                      }))), React.createElement("ul", {
                                   className: listContainer
                                 }, ReasonReact.element(undefined, undefined, Get$ReactTemplate.make((function (todos) {
                                             return Curry._1(send, /* SetInitialTodos */Block.__(6, [todos]));
@@ -128,18 +133,37 @@ function make(_children) {
                                                 case 1 : 
                                                     return "loading lho";
                                                 case 2 : 
-                                                    return $$Array.of_list(List.map((function (todo) {
-                                                                      return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
-                                                                                        return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
-                                                                                      }), (function (value) {
-                                                                                        return Curry._1(send, /* UpdateTodo */Block.__(0, [
-                                                                                                      todo[/* id */0],
-                                                                                                      value
-                                                                                                    ]));
-                                                                                      }), (function (_event) {
-                                                                                        return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
-                                                                                      }), /* array */[]));
-                                                                    }), state[/* todos */0]));
+                                                    var todos = state[/* todos */0];
+                                                    var send$1 = send;
+                                                    var match = List.length(todos) < 1;
+                                                    if (match) {
+                                                      return null;
+                                                    } else {
+                                                      var __x = List.filter((function (todo) {
+                                                                var match = state[/* selectedFilter */2];
+                                                                switch (match) {
+                                                                  case 0 : 
+                                                                      return true;
+                                                                  case 1 : 
+                                                                      return !todo[/* checked */2];
+                                                                  case 2 : 
+                                                                      return todo[/* checked */2];
+                                                                  
+                                                                }
+                                                              }))(state[/* todos */0]);
+                                                      return $$Array.of_list(List.map((function (todo) {
+                                                                        return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
+                                                                                          return Curry._1(send$1, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
+                                                                                        }), (function (value) {
+                                                                                          return Curry._1(send$1, /* UpdateTodo */Block.__(0, [
+                                                                                                        todo[/* id */0],
+                                                                                                        value
+                                                                                                      ]));
+                                                                                        }), (function (_event) {
+                                                                                          return Curry._1(send$1, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
+                                                                                        }), /* array */[]));
+                                                                      }), __x));
+                                                    }
                                                 
                                               }
                                             } else {
@@ -147,11 +171,7 @@ function make(_children) {
                                             }
                                           })))), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
                                         return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
-                                      }), /* array */[])), React.createElement("button", {
-                                  onClick: (function (_e) {
-                                      return sendRequest(/* () */0);
-                                    })
-                                })));
+                                      }), /* array */[]))));
             }),
           /* initialState */(function (param) {
               return /* record */[
@@ -184,41 +204,27 @@ function make(_children) {
                                 /* selectedFilter */state[/* selectedFilter */2]
                               ]]);
                 case 1 : 
+                    var todo = action[0];
+                    console.log(todo);
+                    return /* UpdateWithSideEffects */Block.__(2, [
+                              /* record */[
+                                /* todos : :: */[
+                                  todo,
+                                  state[/* todos */0]
+                                ],
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */state[/* selectedFilter */2]
+                              ],
+                              (function (self) {
+                                  return Curry._1(self[/* send */3], /* OnChangeNewTodoValue */Block.__(2, [""]));
+                                })
+                            ]);
+                case 2 : 
                     return /* Update */Block.__(0, [/* record */[
                                 /* todos */state[/* todos */0],
                                 /* newTodoValue */action[0],
                                 /* selectedFilter */state[/* selectedFilter */2]
                               ]]);
-                case 2 : 
-                    if (action[0] !== 13) {
-                      return /* NoUpdate */0;
-                    } else {
-                      var state$1 = state;
-                      var value = state$1[/* newTodoValue */1];
-                      if (value === "") {
-                        return /* NoUpdate */0;
-                      } else {
-                        var todo_000 = /* id */Pervasives.string_of_float(Date.now());
-                        var todo = /* record */[
-                          todo_000,
-                          /* title */value,
-                          /* checked */false
-                        ];
-                        return /* UpdateWithSideEffects */Block.__(2, [
-                                  /* record */[
-                                    /* todos : :: */[
-                                      todo,
-                                      state$1[/* todos */0]
-                                    ],
-                                    /* newTodoValue */state$1[/* newTodoValue */1],
-                                    /* selectedFilter */state$1[/* selectedFilter */2]
-                                  ],
-                                  (function (self) {
-                                      return Curry._1(self[/* send */3], /* OnChangeNewTodoValue */Block.__(1, [""]));
-                                    })
-                                ]);
-                      }
-                    }
                 case 3 : 
                     var id = action[0];
                     var newTodoItems$1 = List.filter((function (todo) {
@@ -268,7 +274,6 @@ function make(_children) {
 }
 
 exports.Styles = Styles;
-exports.sendRequest = sendRequest;
 exports.component = component;
 exports.make = make;
 /* container Not a pure module */

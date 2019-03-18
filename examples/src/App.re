@@ -38,57 +38,26 @@ type state = {
 
 type action =
   | UpdateTodo(string, string)
+  | AddTodo(Model.t)
   | OnChangeNewTodoValue(string)
-  | HandleEnterKeyDown(int)
   | DeleteTodo(string)
   | ToggleCheck(string)
   | OnFilter(Todo_Footer.filter)
   | SetInitialTodos(list(Model.t))
-
-let sendRequest = () => {
-       let todo: Model.t = {
-        id: string_of_float(Js.Date.now()),
-        title: "sss",
-        checked: false,
-      };
-    let d = Json.stringify(Model.write_t(todo));
-  Js.Promise.(
-    Fetch.fetchWithInit(
-      "http://localhost:3000/todos",
-      Fetch.RequestInit.make(
-        ~credentials=Include,
-      ~headers=Fetch.HeadersInit.make({"Content-Type": "application/json"}),
-        ~body=Fetch.BodyInit.make(d),
-        ~method_=Post,
-        ()
-      )
-    )
-    |> then_(response => {
-                 
-                Js.log(response) |> resolve;
-               })
-            |> catch(error =>
-                 Js.log(error) |> resolve
-               )
-            |> ignore
-  )
-}
 let component = ReasonReact.reducerComponent("App_Root");
 
 let make = _children => {
   let handleKeyOnSave = state => {
     switch (state.newTodoValue) {
-    | "" => ReasonReact.NoUpdate
+    | "" => None
     | value =>
       let todo: Model.t = {
         id: string_of_float(Js.Date.now()),
         title: value,
         checked: false,
       };
-      ReasonReact.UpdateWithSideEffects(
-        {...state, todos: [todo, ...state.todos]},
-        self => self.send(""->OnChangeNewTodoValue),
-      );
+
+      Some(todo)
     };
   };
   {
@@ -105,11 +74,12 @@ let make = _children => {
         ReasonReact.Update({...state, todos: newTodoItems});
       | OnChangeNewTodoValue(newTodoValue) =>
         ReasonReact.Update({...state, newTodoValue})
-      | HandleEnterKeyDown(num) =>
-        switch (num) {
-        | 13 => handleKeyOnSave(state)
-        | _ => ReasonReact.NoUpdate
-        }
+      | AddTodo(todo) =>
+      Js.log(todo) 
+              ReasonReact.UpdateWithSideEffects(
+        {...state, todos: [todo, ...state.todos]},
+        self => self.send(""->OnChangeNewTodoValue),
+      )
 
       | DeleteTodo(id) =>
         let newTodoItems =
@@ -164,17 +134,34 @@ let make = _children => {
           {ReasonReact.string("Todo Jadi Jadian")}
         </h1>
         <div className=Styles.todoContainer>
-          <Todo_AddInput
+        <Post>
+          ...{(status, submit) =>
+           <Todo_AddInput
             value={state.newTodoValue}
+            disabled={
+              switch status {
+              | Idle => false
+              | Sending => true
+              };
+            }
             onChange={event =>
               send(
                 ReactEvent.Form.target(event)##value->OnChangeNewTodoValue,
               )
             }
             onKeyDown={event =>
-              send(HandleEnterKeyDown(ReactEvent.Keyboard.which(event)))
+              switch (ReactEvent.Keyboard.which(event)) {
+                | 13 => 
+                  switch(handleKeyOnSave(state)){
+                    | None => ()
+                    | Some(todo) => submit(~bodyData=todo,~onCompleted={responseTodo => send(AddTodo(responseTodo))} )
+                  }
+                | _ => ()
+                }
             }
           />
+          }
+        </Post>
           <ul className=Styles.listContainer>
 
               <Get
@@ -184,21 +171,7 @@ let make = _children => {
                   | Loading => ReasonReact.string("loading lho")
                   | Error(message) => ReasonReact.string(message)
                   | Idle => ReasonReact.null
-                  | Loaded =>
-                    state.todos
-                    |> List.map(todo =>
-                         <Todo_Item
-                           key={todo.id}
-                           onDestroy={_event => send(DeleteTodo(todo.id))}
-                           onUpdate={value =>
-                             send(UpdateTodo(todo.id, value))
-                           }
-                           onToggle={_event => send(ToggleCheck(todo.id))}
-                           todo
-                         />
-                       )
-                    |> Array.of_list
-                    |> ReasonReact.array
+                  | Loaded => renderTodoItems(state.todos, send)
                   }
                 }
               </Get>
@@ -208,7 +181,6 @@ let make = _children => {
             todoLength={List.length(state.todos)}
             onFilter={selectedFilter => send(OnFilter(selectedFilter))}
           />
-          <button onClick={_e => sendRequest()} />
         </div>
       </div>;
     },

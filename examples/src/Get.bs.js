@@ -8,7 +8,7 @@ var Model$ReactTemplate = require("./Model.bs.js");
 
 var component = ReasonReact.reducerComponent("Get");
 
-function make(children) {
+function make(onCompleted, children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
@@ -30,24 +30,27 @@ function make(children) {
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, _state) {
               if (typeof action === "number") {
-                return /* UpdateWithSideEffects */Block.__(2, [
-                          /* Loading */1,
-                          (function (self) {
-                              fetch("http://localhost:3000/todos").then((function (prim) {
-                                          return prim.json();
-                                        })).then((function (response) {
-                                        var todos = Model$ReactTemplate.read_response(response);
-                                        return Promise.resolve(Curry._1(self[/* send */3], /* FetchSucceed */Block.__(0, [todos])));
-                                      })).catch((function (_error) {
-                                      return Promise.resolve(Curry._1(self[/* send */3], /* FetchFailed */Block.__(1, ["Fetch todos failed"])));
-                                    }));
-                              return /* () */0;
-                            })
-                        ]);
-              } else if (action.tag) {
-                return /* Update */Block.__(0, [/* Error */Block.__(0, [action[0]])]);
+                if (action !== 0) {
+                  return /* Update */Block.__(0, [/* Loaded */2]);
+                } else {
+                  return /* UpdateWithSideEffects */Block.__(2, [
+                            /* Loading */1,
+                            (function (self) {
+                                fetch("http://localhost:3000/todos").then((function (prim) {
+                                            return prim.json();
+                                          })).then((function (response) {
+                                          var todos = Model$ReactTemplate.read_response(response);
+                                          Curry._1(onCompleted, todos);
+                                          return Promise.resolve(Curry._1(self[/* send */3], /* FetchSucceed */1));
+                                        })).catch((function (_error) {
+                                        return Promise.resolve(Curry._1(self[/* send */3], /* FetchFailed */["Fetch todos failed"]));
+                                      }));
+                                return /* () */0;
+                              })
+                          ]);
+                }
               } else {
-                return /* Update */Block.__(0, [/* Loaded */Block.__(1, [action[0]])]);
+                return /* Update */Block.__(0, [/* Error */[action[0]]]);
               }
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]

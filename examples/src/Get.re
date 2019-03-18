@@ -2,16 +2,16 @@ type state =
   | Idle
   | Error(string)
   | Loading
-  | Loaded(list(Model.t));
+  | Loaded
 
 type action =
   | FetchRequested
-  | FetchSucceed(list(Model.t))
+  | FetchSucceed
   | FetchFailed(string);
 
 let component = ReasonReact.reducerComponent("Get");
 
-let make = children => {
+let make = (~onCompleted, children) => {
   ...component,
   initialState: () => Idle,
   reducer: (action, _state) => {
@@ -25,7 +25,8 @@ let make = children => {
             |> then_(Bs_fetch.Response.json)
             |> then_(response => {
                  let todos = Model.read_response(response);
-                 self.send(FetchSucceed(todos)) |> resolve;
+                 onCompleted(todos)
+                 self.send(FetchSucceed) |> resolve;
                })
             |> catch(_error =>
                  self.send(FetchFailed("Fetch todos failed")) |> resolve
@@ -33,7 +34,7 @@ let make = children => {
             |> ignore
           ),
       )
-    | FetchSucceed(todos) => ReasonReact.Update(Loaded(todos))
+    | FetchSucceed => ReasonReact.Update(Loaded)
     | FetchFailed(message) => ReasonReact.Update(Error(message))
     };
   },

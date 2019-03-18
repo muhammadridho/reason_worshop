@@ -42,8 +42,37 @@ type action =
   | HandleEnterKeyDown(int)
   | DeleteTodo(string)
   | ToggleCheck(string)
-  | OnFilter(Todo_Footer.filter);
+  | OnFilter(Todo_Footer.filter)
+  | SetInitialTodos(list(Model.t))
 
+let sendRequest = () => {
+       let todo: Model.t = {
+        id: string_of_float(Js.Date.now()),
+        title: "sss",
+        checked: false,
+      };
+    let d = Json.stringify(Model.write_t(todo));
+  Js.Promise.(
+    Fetch.fetchWithInit(
+      "http://localhost:3000/todos",
+      Fetch.RequestInit.make(
+        ~credentials=Include,
+      ~headers=Fetch.HeadersInit.make({"Content-Type": "application/json"}),
+        ~body=Fetch.BodyInit.make(d),
+        ~method_=Post,
+        ()
+      )
+    )
+    |> then_(response => {
+                 
+                Js.log(response) |> resolve;
+               })
+            |> catch(error =>
+                 Js.log(error) |> resolve
+               )
+            |> ignore
+  )
+}
 let component = ReasonReact.reducerComponent("App_Root");
 
 let make = _children => {
@@ -97,6 +126,10 @@ let make = _children => {
         ReasonReact.Update({...state, todos: newTodoItems});
       | OnFilter(filterType) =>
         ReasonReact.Update({...state, selectedFilter: filterType})
+      | SetInitialTodos(todos) =>
+        ReasonReact.Update({...state, todos})
+      
+      
       },
     render: ({state, send}) => {
       open Model;
@@ -144,14 +177,15 @@ let make = _children => {
           />
           <ul className=Styles.listContainer>
 
-              <Get>
+              <Get
+              onCompleted={todos => send(SetInitialTodos(todos))}>
                 ...{todoState =>
                   switch (todoState) {
                   | Loading => ReasonReact.string("loading lho")
                   | Error(message) => ReasonReact.string(message)
                   | Idle => ReasonReact.null
-                  | Loaded(todos) =>
-                    todos
+                  | Loaded =>
+                    state.todos
                     |> List.map(todo =>
                          <Todo_Item
                            key={todo.id}
@@ -174,6 +208,7 @@ let make = _children => {
             todoLength={List.length(state.todos)}
             onFilter={selectedFilter => send(OnFilter(selectedFilter))}
           />
+          <button onClick={_e => sendRequest()} />
         </div>
       </div>;
     },

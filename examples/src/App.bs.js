@@ -2,14 +2,18 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
+var Json = require("@glennsl/bs-json/src/Json.bs.js");
 var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var Fetch = require("bs-fetch/src/Fetch.js");
 var React = require("react");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Get$ReactTemplate = require("./Get.bs.js");
+var Model$ReactTemplate = require("./Model.bs.js");
 var Todo_Item$ReactTemplate = require("./Todo_Item.bs.js");
 var Todo_Footer$ReactTemplate = require("./Todo_Footer.bs.js");
 var Todo_AddInput$ReactTemplate = require("./Todo_AddInput.bs.js");
@@ -68,6 +72,24 @@ var Styles = /* module */[
   /* listContainer */listContainer
 ];
 
+function sendRequest(param) {
+  var todo_000 = /* id */Pervasives.string_of_float(Date.now());
+  var todo = /* record */[
+    todo_000,
+    /* title */"sss",
+    /* checked */false
+  ];
+  var d = Json.stringify(Model$ReactTemplate.write_t(todo));
+  fetch("http://localhost:3000/todos", Fetch.RequestInit[/* make */0](/* Post */2, {
+                  "Content-Type": "application/json"
+                }, Caml_option.some(d), undefined, undefined, undefined, /* Include */2, undefined, undefined, undefined, undefined)(/* () */0)).then((function (response) {
+            return Promise.resolve((console.log(response), /* () */0));
+          })).catch((function (error) {
+          return Promise.resolve((console.log(error), /* () */0));
+        }));
+  return /* () */0;
+}
+
 var component = ReasonReact.reducerComponent("App_Root");
 
 function make(_children) {
@@ -96,32 +118,40 @@ function make(_children) {
                                         return Curry._1(send, /* HandleEnterKeyDown */Block.__(2, [$$event.which]));
                                       }), /* array */[])), React.createElement("ul", {
                                   className: listContainer
-                                }, ReasonReact.element(undefined, undefined, Get$ReactTemplate.make((function (todoState) {
+                                }, ReasonReact.element(undefined, undefined, Get$ReactTemplate.make((function (todos) {
+                                            return Curry._1(send, /* SetInitialTodos */Block.__(6, [todos]));
+                                          }), (function (todoState) {
                                             if (typeof todoState === "number") {
-                                              if (todoState === 0) {
-                                                return null;
-                                              } else {
-                                                return "loading lho";
+                                              switch (todoState) {
+                                                case 0 : 
+                                                    return null;
+                                                case 1 : 
+                                                    return "loading lho";
+                                                case 2 : 
+                                                    return $$Array.of_list(List.map((function (todo) {
+                                                                      return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
+                                                                                        return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
+                                                                                      }), (function (value) {
+                                                                                        return Curry._1(send, /* UpdateTodo */Block.__(0, [
+                                                                                                      todo[/* id */0],
+                                                                                                      value
+                                                                                                    ]));
+                                                                                      }), (function (_event) {
+                                                                                        return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
+                                                                                      }), /* array */[]));
+                                                                    }), state[/* todos */0]));
+                                                
                                               }
-                                            } else if (todoState.tag) {
-                                              return $$Array.of_list(List.map((function (todo) {
-                                                                return ReasonReact.element(todo[/* id */0], undefined, Todo_Item$ReactTemplate.make(todo, (function (_event) {
-                                                                                  return Curry._1(send, /* DeleteTodo */Block.__(3, [todo[/* id */0]]));
-                                                                                }), (function (value) {
-                                                                                  return Curry._1(send, /* UpdateTodo */Block.__(0, [
-                                                                                                todo[/* id */0],
-                                                                                                value
-                                                                                              ]));
-                                                                                }), (function (_event) {
-                                                                                  return Curry._1(send, /* ToggleCheck */Block.__(4, [todo[/* id */0]]));
-                                                                                }), /* array */[]));
-                                                              }), todoState[0]));
                                             } else {
                                               return todoState[0];
                                             }
                                           })))), ReasonReact.element(undefined, undefined, Todo_Footer$ReactTemplate.make(List.length(state[/* todos */0]), (function (selectedFilter) {
                                         return Curry._1(send, /* OnFilter */Block.__(5, [selectedFilter]));
-                                      }), /* array */[]))));
+                                      }), /* array */[])), React.createElement("button", {
+                                  onClick: (function (_e) {
+                                      return sendRequest(/* () */0);
+                                    })
+                                })));
             }),
           /* initialState */(function (param) {
               return /* record */[
@@ -224,6 +254,12 @@ function make(_children) {
                                 /* newTodoValue */state[/* newTodoValue */1],
                                 /* selectedFilter */action[0]
                               ]]);
+                case 6 : 
+                    return /* Update */Block.__(0, [/* record */[
+                                /* todos */action[0],
+                                /* newTodoValue */state[/* newTodoValue */1],
+                                /* selectedFilter */state[/* selectedFilter */2]
+                              ]]);
                 
               }
             }),
@@ -232,6 +268,7 @@ function make(_children) {
 }
 
 exports.Styles = Styles;
+exports.sendRequest = sendRequest;
 exports.component = component;
 exports.make = make;
 /* container Not a pure module */
